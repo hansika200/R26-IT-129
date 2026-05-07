@@ -1,0 +1,44 @@
+# ============================================================
+# Hansika — Teacher Dashboard & Content Authoring Backend
+# SLSL Recognition System — Objective 4
+# ============================================================
+# IMPORTANT: These versions are pinned to be compatible with
+# the existing Janith/ ML pipeline. DO NOT UPGRADE.
+# ============================================================
+
+# Core ML Stack (must match Janith/)
+tensorflow==2.13.0
+numpy==1.24.3
+mediapipe==0.10.5
+keras==2.13.1
+opencv-python==4.8.1.78
+
+# Web Framework
+Flask==3.1.3
+flask-cors==4.0.0
+flask-jwt-extended==4.5.3
+
+# Database
+# SQLite is built-in to Python — no extra install needed
+
+# Auth & Security
+bcrypt==4.0.1
+PyJWT==2.8.0
+python-dotenv==1.0.0
+
+# File handling
+Werkzeug==3.0.1
+Pillow==10.0.1
+
+# Data processing
+pandas==2.0.3
+scikit-learn==1.3.2
+
+# Utilities
+python-dateutil==2.8.2
+requests==2.31.0
+
+# ============================================================
+# NOTE: DO NOT install jax or jaxlib
+# NOTE: numpy MUST stay 1.24.3 — 2.x breaks TF 2.13
+# ============================================================
