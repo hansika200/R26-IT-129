@@ -20,7 +20,8 @@ from services.annotation_service import (
     get_annotation_export_data,
     mark_annotations_exported,
 )
-from utils.helpers import success_response, error_response, parse_pagination
+from utils.response import success_response, error_response
+from utils.helpers import parse_pagination
 from utils.validators import validate_annotation_payload
 
 logger = logging.getLogger(__name__)
@@ -74,14 +75,14 @@ def create():
 
     Body: { recording_id, is_correct, correct_label?, notes? }
     """
-    user_id = int(get_jwt_identity())
+    user_id = get_jwt_identity()
     data = request.get_json(silent=True)
     err = validate_annotation_payload(data)
     if err:
         return error_response(err, 400)
 
     success, message, ann = create_annotation(
-        recording_id=int(data["recording_id"]),
+        recording_id=str(data["recording_id"]),
         annotated_by=user_id,
         is_correct=bool(data["is_correct"]),
         correct_label=data.get("correct_label", ""),

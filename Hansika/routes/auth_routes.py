@@ -12,7 +12,7 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 
 from services.auth_service import register_user, login_user, get_user_by_id
-from utils.helpers import success_response, error_response
+from utils.response import success_response, error_response
 from utils.validators import validate_register_payload, validate_login_payload
 
 logger = logging.getLogger(__name__)
@@ -74,7 +74,7 @@ def profile():
     Return the authenticated teacher's profile.
     Requires: Bearer token
     """
-    user_id = int(get_jwt_identity())
+    user_id = get_jwt_identity()
     user = get_user_by_id(user_id)
     if not user:
         return error_response("User not found.", 404)

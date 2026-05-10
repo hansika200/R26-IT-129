@@ -18,7 +18,9 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
 from config.settings import get_config
-from database.db import init_db
+from database.mongodb import init_mongo
+from database.indexes import create_indexes
+from utils.bson_helper import MongoJSONProvider
 from utils.logger import setup_logger
 
 # ── Configure logger before importing routes ─────────────────────────────────
@@ -43,6 +45,9 @@ def create_app() -> Flask:
     app.config["JWT_ACCESS_TOKEN_EXPIRES"]       = cfg.JWT_ACCESS_TOKEN_EXPIRES
     app.config["MAX_CONTENT_LENGTH"]             = cfg.MAX_CONTENT_LENGTH
 
+    # Use custom JSON provider for BSON ObjectId
+    app.json = MongoJSONProvider(app)
+
     # ── Extensions ────────────────────────────────────────────────────────────
     CORS(app, origins=cfg.CORS_ORIGINS, supports_credentials=True)
     JWTManager(app)
@@ -54,6 +59,7 @@ def create_app() -> Flask:
     from routes.annotation_routes import annotation_bp
     from routes.assignment_routes import assignment_bp
     from routes.analytics_routes  import analytics_bp
+    from routes.retraining_routes import retraining_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(teacher_bp)
@@ -61,6 +67,16 @@ def create_app() -> Flask:
     app.register_blueprint(annotation_bp)
     app.register_blueprint(assignment_bp)
     app.register_blueprint(analytics_bp)
+    app.register_blueprint(retraining_bp)
+
+    # ── Root endpoint ─────────────────────────────────────────────────────────
+    @app.route("/", methods=["GET"])
+    def root():
+        return jsonify({
+            "success": True,
+            "message": "Welcome to the Hansika Teacher Dashboard API (SLSL Objective 4).",
+            "status": "Online"
+        }), 200
 
     # ── Health check ──────────────────────────────────────────────────────────
     @app.route("/api/health", methods=["GET"])
@@ -101,10 +117,12 @@ def main():
     logger.info("Hansika Teacher Dashboard — SLSL Objective 4")
     logger.info("=" * 60)
 
-    # Initialise SQLite schema
-    logger.info("Initialising database at: %s", cfg.DATABASE_PATH)
-    init_db()
-    logger.info("Database ready.")
+    # Initialise MongoDB
+    logger.info("Connecting to MongoDB Atlas...")
+    init_mongo()
+    logger.info("Creating MongoDB indexes...")
+    create_indexes()
+    logger.info("MongoDB ready.")
 
     # Start background retraining checker (checks every hour)
     from ml_integration.retrain_trigger import start_background_checker

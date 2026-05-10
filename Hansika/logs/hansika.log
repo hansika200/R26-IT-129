@@ -1,0 +1,24 @@
+[2026-05-09 17:24:52] INFO     hansika                        ============================================================
+[2026-05-09 17:24:52] INFO     hansika                        Hansika Teacher Dashboard — SLSL Objective 4
+[2026-05-09 17:24:52] INFO     hansika                        ============================================================
+[2026-05-09 17:24:52] INFO     hansika                        Connecting to MongoDB Atlas...
+[2026-05-09 17:25:31] INFO     hansika                        ============================================================
+[2026-05-09 17:25:31] INFO     hansika                        Hansika Teacher Dashboard — SLSL Objective 4
+[2026-05-09 17:25:31] INFO     hansika                        ============================================================
+[2026-05-09 17:25:31] INFO     hansika                        Connecting to MongoDB Atlas...
+[2026-05-09 17:25:32] INFO     hansika                        Creating MongoDB indexes...
+[2026-05-09 17:25:34] INFO     hansika                        MongoDB ready.
+[2026-05-09 17:25:34] INFO     hansika                        Background retraining checker started.
+[2026-05-09 17:25:35] INFO     hansika                        Flask app created. Blueprints registered.
+[2026-05-09 17:25:35] INFO     hansika                        Starting server on 0.0.0.0:5001
+[2026-05-09 17:25:35] INFO     hansika                        Janith ML backend expected at: http://127.0.0.1:5000
+[2026-05-09 17:27:08] INFO     hansika                        ============================================================
+[2026-05-09 17:27:08] INFO     hansika                        Hansika Teacher Dashboard — SLSL Objective 4
+[2026-05-09 17:27:08] INFO     hansika                        ============================================================
+[2026-05-09 17:27:08] INFO     hansika                        Connecting to MongoDB Atlas...
+[2026-05-09 17:27:09] INFO     hansika                        Creating MongoDB indexes...
+[2026-05-09 17:27:10] INFO     hansika                        MongoDB ready.
+[2026-05-09 17:27:10] INFO     hansika                        Background retraining checker started.
+[2026-05-09 17:27:11] INFO     hansika                        Flask app created. Blueprints registered.
+[2026-05-09 17:27:11] INFO     hansika                        Starting server on 0.0.0.0:5001
+[2026-05-09 17:27:11] INFO     hansika                        Janith ML backend expected at: http://127.0.0.1:5000

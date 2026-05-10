@@ -15,7 +15,6 @@ import threading
 import time
 
 from services.retraining_service import check_retrain_eligibility, trigger_retraining
-from database.models import RetrainingLogModel
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +42,7 @@ def auto_check_and_trigger() -> dict:
         logger.info("Auto-retrain triggered: %s", eligibility.get("reason"))
         success, message, log = trigger_retraining(
             triggered_by=None,
-            reason=RetrainingLogModel.REASON_AUTO,
+            reason="auto",
         )
         return {"triggered": success, "reason": message, "log": log}
     finally:

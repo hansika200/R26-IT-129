@@ -1,4 +1,4 @@
-"""
+""""
 utils/helpers.py
 ================
 General-purpose utility functions used across the Hansika backend.
@@ -16,55 +16,8 @@ from typing import Any, Optional
 from flask import jsonify
 
 
-# ── API Response Helpers ──────────────────────────────────────────────────────
+# (Response functions moved to utils/response.py)
 
-def success_response(data: Any = None, message: str = "Success", status_code: int = 200):
-    """
-    Standard success JSON response envelope.
-
-    Returns:
-        Flask Response with shape:
-        { "success": true, "message": "...", "data": ... }
-    """
-    payload = {"success": True, "message": message}
-    if data is not None:
-        payload["data"] = data
-    return jsonify(payload), status_code
-
-
-def error_response(message: str, status_code: int = 400, details: Any = None):
-    """
-    Standard error JSON response envelope.
-
-    Returns:
-        Flask Response with shape:
-        { "success": false, "message": "...", "details": ... }
-    """
-    payload = {"success": False, "message": message}
-    if details is not None:
-        payload["details"] = details
-    return jsonify(payload), status_code
-
-
-def paginated_response(
-    items: list,
-    total: int,
-    page: int,
-    per_page: int,
-    message: str = "Success",
-):
-    """Wrap a list result with pagination metadata."""
-    return jsonify({
-        "success": True,
-        "message": message,
-        "data": items,
-        "pagination": {
-            "total": total,
-            "page": page,
-            "per_page": per_page,
-            "pages": max(1, -(-total // per_page)),  # ceiling division
-        },
-    }), 200
 
 
 # ── ID & Filename Generators ──────────────────────────────────────────────────

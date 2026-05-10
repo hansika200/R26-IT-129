@@ -17,7 +17,7 @@ from services.peer_review_service import (
     get_pending_review_queue,
     get_review_statistics,
 )
-from utils.helpers import success_response, error_response
+from utils.response import success_response, error_response
 from utils.validators import validate_review_payload
 
 logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ def post_review():
 
     Body: { sign_id, decision, rejection_reason?, notes? }
     """
-    user_id = int(get_jwt_identity())
+    user_id = get_jwt_identity()
     data = request.get_json(silent=True)
     err = validate_review_payload(data)
     if err:
@@ -45,7 +45,7 @@ def post_review():
         return error_response("'sign_id' is required.", 400)
 
     success, message, review = submit_review(
-        sign_id=int(sign_id),
+        sign_id=sign_id,
         reviewer_id=user_id,
         decision=data["decision"],
         rejection_reason=data.get("rejection_reason", ""),
@@ -56,7 +56,7 @@ def post_review():
     return success_response(review, message, 201)
 
 
-@review_bp.route("/<int:sign_id>/reviews", methods=["GET"])
+@review_bp.route("/<string:sign_id>/reviews", methods=["GET"])
 @jwt_required()
 def sign_reviews(sign_id):
     """

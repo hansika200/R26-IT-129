@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'screens/landing_screen.dart';
+import 'screens/main_navigator.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +27,7 @@ class SLSLApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const LandingScreen(),
+      home: const MainNavigator(),
     );
   }
 }

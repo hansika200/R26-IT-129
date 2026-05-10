@@ -16,7 +16,8 @@ from services.assignment_service import (
     deactivate_assignment, upsert_student_progress,
     get_student_progress, get_all_progress_for_assignment,
 )
-from utils.helpers import success_response, error_response, parse_pagination
+from utils.response import success_response, error_response
+from utils.helpers import parse_pagination
 from utils.validators import validate_assignment_payload
 
 logger = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ def create():
 
     Body: { title, sign_labels[], description?, due_date? }
     """
-    user_id = int(get_jwt_identity())
+    user_id = get_jwt_identity()
     data = request.get_json(silent=True)
     err = validate_assignment_payload(data)
     if err:
@@ -60,7 +61,7 @@ def list_all():
     return success_response({"assignments": assignments, "total": total, "page": page})
 
 
-@assignment_bp.route("/<int:assignment_id>", methods=["GET"])
+@assignment_bp.route("/<string:assignment_id>", methods=["GET"])
 @jwt_required()
 def get_detail(assignment_id):
     """GET /api/assignments/<id> — Single assignment detail."""
@@ -70,7 +71,7 @@ def get_detail(assignment_id):
     return success_response(a)
 
 
-@assignment_bp.route("/<int:assignment_id>/deactivate", methods=["POST"])
+@assignment_bp.route("/<string:assignment_id>/deactivate", methods=["POST"])
 @jwt_required()
 def deactivate(assignment_id):
     """POST /api/assignments/<id>/deactivate — Soft-delete an assignment."""
@@ -80,7 +81,7 @@ def deactivate(assignment_id):
     return success_response({"assignment_id": assignment_id}, "Assignment deactivated.")
 
 
-@assignment_bp.route("/<int:assignment_id>/progress", methods=["GET"])
+@assignment_bp.route("/<string:assignment_id>/progress", methods=["GET"])
 @jwt_required()
 def all_progress(assignment_id):
     """GET /api/assignments/<id>/progress — All students' progress."""
@@ -102,7 +103,7 @@ def update_progress():
         return error_response("Request body required.", 400)
     ok, message = upsert_student_progress(
         student_id=data.get("student_id", ""),
-        assignment_id=int(data.get("assignment_id", 0)),
+        assignment_id=str(data.get("assignment_id", "")),
         sign_label=data.get("sign_label", ""),
         is_correct=bool(data.get("is_correct", False)),
     )
@@ -111,7 +112,7 @@ def update_progress():
     return success_response(None, message)
 
 
-@assignment_bp.route("/progress/<student_id>/<int:assignment_id>", methods=["GET"])
+@assignment_bp.route("/progress/<student_id>/<string:assignment_id>", methods=["GET"])
 @jwt_required()
 def student_progress(student_id, assignment_id):
     """GET /api/assignments/progress/<student_id>/<assignment_id>"""

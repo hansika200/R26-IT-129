@@ -22,7 +22,8 @@ from services.vocabulary_service import (
 from services.auth_service import list_users
 from ml_integration.keypoint_bridge import extract_keypoints_from_video, load_classes
 from config.settings import get_config
-from utils.helpers import success_response, error_response, generate_unique_filename, parse_pagination
+from utils.response import success_response, error_response
+from utils.helpers import generate_unique_filename, parse_pagination
 from utils.validators import validate_sign_payload, is_allowed_video, sanitize_filename
 
 logger = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ def upload_sign():
         description (str, optional)
         video (file, optional): Video file upload
     """
-    user_id = int(get_jwt_identity())
+    user_id = get_jwt_identity()
     label = request.form.get("label", "").strip()
     description = request.form.get("description", "").strip()
 
@@ -115,7 +116,7 @@ def approved_signs():
     return success_response(get_approved_signs())
 
 
-@teacher_bp.route("/signs/<int:sign_id>", methods=["GET"])
+@teacher_bp.route("/signs/<string:sign_id>", methods=["GET"])
 @jwt_required()
 def get_sign_detail(sign_id):
     """GET /api/signs/<id> — Single sign detail."""

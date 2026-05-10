@@ -32,10 +32,11 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES: int = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRES", 86400))  # 24h
 
     # ── Database ─────────────────────────────────────────────────────────────
-    DATABASE_PATH: str = os.getenv(
-        "DATABASE_PATH",
-        str(BASE_DIR / "database" / "slsl_teacher.db")
+    MONGODB_URI: str = os.getenv(
+        "MONGODB_URI",
+        "mongodb://localhost:27017/?retryWrites=true&w=majority"
     )
+    MONGODB_DB_NAME: str = os.getenv("MONGODB_DB_NAME", "hansika_db")
 
     # ── ML Integration (Janith pipeline) ────────────────────────────────────
     JANITH_MODELS_DIR: str = os.getenv(

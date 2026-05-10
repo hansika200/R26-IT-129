@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -530,43 +531,48 @@ class _CameraScreenState extends State<CameraScreen>
 
   Widget _buildProcessingOverlay() {
     return Positioned.fill(
-      child: Container(
-        color: Colors.black.withOpacity(0.80),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          const CircularProgressIndicator(color: kPrimary, strokeWidth: 3),
-          const SizedBox(height: 20),
-          Text(_statusText,
-              style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
-              textAlign: TextAlign.center),
-          const SizedBox(height: 14),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 48),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: LinearProgressIndicator(
-                value: _captureProgress,
-                backgroundColor: Colors.white12,
-                valueColor: const AlwaysStoppedAnimation(kPrimary),
-                minHeight: 6,
+      child: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
+          child: Container(
+            color: Colors.black.withOpacity(0.4),
+            child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              const CircularProgressIndicator(color: kPrimary, strokeWidth: 3),
+              const SizedBox(height: 20),
+              Text(_statusText,
+                  style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
+                  textAlign: TextAlign.center),
+              const SizedBox(height: 14),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 48),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: LinearProgressIndicator(
+                    value: _captureProgress,
+                    backgroundColor: Colors.white12,
+                    valueColor: const AlwaysStoppedAnimation(kPrimary),
+                    minHeight: 6,
+                  ),
+                ),
               ),
-            ),
+            ]),
           ),
-        ]),
+        ),
       ),
     );
   }
 
   Widget _buildBottomPanel() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 36),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.bottomCenter, end: Alignment.topCenter,
-          colors: [Colors.black, Colors.black.withOpacity(0.85), Colors.transparent],
-          stops: const [0.0, 0.55, 1.0],
-        ),
-      ),
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 36),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.5),
+            border: Border(top: BorderSide(color: Colors.white.withOpacity(0.1))),
+          ),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         if (!_isCapturing && !_isProcessing) _buildModeSelector(),
 
@@ -643,7 +649,8 @@ class _CameraScreenState extends State<CameraScreen>
           Text(_serverOnline ? 'Server online' : 'Server offline',
               style: TextStyle(color: _serverOnline ? kSuccess : kError, fontSize: 11)),
         ]),
-      ]),
+        ])),
+      ),
     );
   }
 
@@ -695,12 +702,15 @@ class _CameraScreenState extends State<CameraScreen>
     final color   = isHigh ? kSuccess : kWarning;
     final handPct = r.totalFrames > 0 ? r.handFrames / r.totalFrames : 0.0;
 
-    return Container(
-      width: double.infinity, padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.88), borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.6)),
-      ),
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+        child: Container(
+          width: double.infinity, padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.4), borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: color.withOpacity(0.6), width: 1.5),
+          ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Icon(Icons.sign_language, color: color, size: 20),
@@ -773,6 +783,8 @@ class _CameraScreenState extends State<CameraScreen>
           )),
         ],
       ]),
+        ),
+      ),
     );
   }
 

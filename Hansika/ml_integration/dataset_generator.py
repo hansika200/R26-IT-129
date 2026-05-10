@@ -6,6 +6,7 @@ Generates labelled training datasets from:
 2. Correctly annotated student recordings.
 
 Output is compatible with the existing Janith training pipeline format.
+Now using MongoDB.
 
 Research Component: SLSL Recognition System — Objective 4
 Author: Hansika
@@ -18,7 +19,8 @@ from typing import Tuple
 import numpy as np
 
 from config.settings import get_config
-from database.db import db_context, rows_to_list
+from database.collections import get_signs_collection, get_annotations_collection, get_db
+from utils.bson_helper import str_to_object_id
 from utils.helpers import utcnow_iso
 
 logger = logging.getLogger(__name__)
@@ -43,18 +45,18 @@ def export_approved_signs_dataset(output_dir: str) -> Tuple[bool, str, dict]:
     X_samples, Y_labels = [], []
 
     try:
-        with db_context() as conn:
-            rows = conn.execute(
-                "SELECT label, keypoints_path FROM signs WHERE status='approved' AND keypoints_path != ''"
-            ).fetchall()
+        coll = get_signs_collection()
+        signs = list(coll.find({
+            "status": "approved",
+            "keypoints_path": {"$nin": ["", None]}
+        }))
 
-        signs = rows_to_list(rows)
         if not signs:
             return False, "No approved signs with keypoints available.", {}
 
         for sign in signs:
-            kp_path = Path(sign["keypoints_path"])
-            if not kp_path.exists():
+            kp_path = Path(sign.get("keypoints_path", ""))
+            if not str(kp_path) or not kp_path.exists():
                 logger.warning("Keypoints file missing: %s", kp_path)
                 continue
             try:
@@ -100,32 +102,36 @@ def export_annotated_student_dataset(output_dir: str) -> Tuple[bool, str, dict]:
     X_samples, Y_labels, ann_ids = [], [], []
 
     try:
-        with db_context() as conn:
-            rows = conn.execute(
-                """SELECT a.id AS ann_id, a.correct_label, sr.keypoints_path, sr.sign_label
-                   FROM annotations a
-                   JOIN student_recordings sr ON a.recording_id=sr.id
-                   WHERE a.is_correct=1 AND a.included_in_dataset=0
-                     AND sr.keypoints_path != ''"""
-            ).fetchall()
+        ann_coll = get_annotations_collection()
+        rec_coll = get_db().student_recordings
 
-        records = rows_to_list(rows)
-        if not records:
+        annotations = list(ann_coll.find({"is_correct": 1, "included_in_dataset": 0}))
+
+        if not annotations:
             return False, "No new annotated student recordings to export.", {}
 
-        for rec in records:
-            kp_path = Path(rec["keypoints_path"])
-            if not kp_path.exists():
+        for ann in annotations:
+            rec = rec_coll.find_one({
+                "_id": str_to_object_id(ann.get("recording_id")),
+                "keypoints_path": {"$nin": ["", None]}
+            })
+
+            if not rec:
                 continue
+
+            kp_path = Path(rec.get("keypoints_path", ""))
+            if not str(kp_path) or not kp_path.exists():
+                continue
+
             try:
                 kp = np.load(str(kp_path), allow_pickle=True)
                 if kp.ndim == 2:
                     kp = kp[np.newaxis, ...]
                 for sample in kp:
                     X_samples.append(sample)
-                    label = rec["correct_label"] or rec["sign_label"]
+                    label = ann.get("correct_label") or rec.get("sign_label")
                     Y_labels.append(label)
-                ann_ids.append(rec["ann_id"])
+                ann_ids.append(str(ann["_id"]))
             except Exception as exc:
                 logger.error("Could not load %s: %s", kp_path, exc)
 
